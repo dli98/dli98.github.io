@@ -10,7 +10,7 @@ borg模式实现了单例行为，与单例模式有所不同，它在一个类�
 而是有多个实例共享同一状态。换一句话说，borg模式的重点是共享状态而不是共享实例身份。
 
 
-### python __dict__
+### python `__dict__`
 在理解此模式在Python中怎么样实现之前，我们应该知道：  
 `Object.__dict__ `  用于存储对象（可写）属性的字典或其他映射对象。  
 `A dictionary or other mapping object used to store an object’s (writable) attributes.`
