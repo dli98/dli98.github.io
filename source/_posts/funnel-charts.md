@@ -4,9 +4,9 @@ date: 2019-11-05 09:27:09
 tags:
 - matplotlib
 - 数据分析
+- plotly
 ---
-漏斗（funnel）图通常用于显示流程数据。漏斗图用梯形面积表示某个环节业务量与上一个环节之间的差异。
-漏斗图从上到下，有逻辑上的顺序关系，表现了随着业务流程的推进业务目标完成的情况。
+漏斗（funnel）图通常用于显示流程数据。漏斗图用梯形面积表示某个环节业务量与上一个环节之间的差异。漏斗图从上到下，有逻辑上的顺序关系，表现了随着业务流程的推进业务目标完成的情况。例如，它用于观察每个阶段销售过程中的收入或损失，并显示逐渐减少的值。每个阶段都以占所有值的百分比表示。
 
 <!-- more -->
 
@@ -113,3 +113,29 @@ plt.show()
 ## 结果显示
 
 ![](/images/funnel.png)
+
+# [plotly 漏斗图](https://plot.ly/python/funnel-charts/)
+
+```python
+from plotly import graph_objects as go
+
+fig = go.Figure(go.Funnel(
+    y = ["Website visit", "Downloads", "Potential customers", "Requested price", "Finalized"],
+    x = [39, 27.4, 20.6, 11, 2],
+    textposition = "inside",
+    textinfo = "value+percent initial",
+    opacity = 0.65, marker = {"color": ["deepskyblue", "lightsalmon", "tan", "teal", "silver"],
+    "line": {"width": [4, 2, 2, 3, 1, 1], "color": ["wheat", "wheat", "blue", "wheat", "wheat"]}},
+    connector = {"line": {"color": "royalblue", "dash": "dot", "width": 3}})
+    )
+
+fig.show()
+```
+
+参数解释：
+
+- `textpositon`: ( "inside" | "outside" | "auto" | "none" )中的一个。默认值为none
+- `textinfo`: 确定图形上显示的文本信息，Any combination of "label", "text",
+ "percent initial", "percent previous", "percent total", "value" joined with a "+" OR "none".
+- `opacity` : 不透明性
+- `marker` ： 字典
