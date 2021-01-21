@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+  <link rel="alternate" href="/atom.xml" title="cherish-kevin" type="application/atom+xml">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":true,"style":"mac"},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: true,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="在 Python 中，我们可以经常看到以双下划线 __ 包裹起来的方法，这些方法被称为魔法方法（magic method）或特殊方法（special method）。 简单地说，这些方法可以给 Python 的类提供特殊功能，方便我们定制一个类。 这篇文章主要是总结了在我们开发中，经常遇到的那些“魔法”方法，如何使用以及它们的使用场景。">
+<meta name="keywords" content="Python,magic method">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python魔术方法，特殊方法">
+<meta property="og:url" content="http://yoursite.com/2019/10/09/datamodel/index.html">
+<meta property="og:site_name" content="cherish-kevin">
+<meta property="og:description" content="在 Python 中，我们可以经常看到以双下划线 __ 包裹起来的方法，这些方法被称为魔法方法（magic method）或特殊方法（special method）。 简单地说，这些方法可以给 Python 的类提供特殊功能，方便我们定制一个类。 这篇文章主要是总结了在我们开发中，经常遇到的那些“魔法”方法，如何使用以及它们的使用场景。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-01-17T11:04:05.616Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python魔术方法，特殊方法">
+<meta name="twitter:description" content="在 Python 中，我们可以经常看到以双下划线 __ 包裹起来的方法，这些方法被称为魔法方法（magic method）或特殊方法（special method）。 简单地说，这些方法可以给 Python 的类提供特殊功能，方便我们定制一个类。 这篇文章主要是总结了在我们开发中，经常遇到的那些“魔法”方法，如何使用以及它们的使用场景。">
+  <link rel="canonical" href="http://yoursite.com/2019/10/09/datamodel/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Python魔术方法，特殊方法 | cherish-kevin</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish-kevin</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">学习笔记</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/kevin-cherish" class="github-corner" title="Dli GitHub" aria-label="Dli GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/09/datamodel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="dli">
+      <meta itemprop="description" content="Python，爬虫，前端反混淆, 数据分析">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish-kevin">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Python魔术方法，特殊方法
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-09 14:18:33" itemprop="dateCreated datePublished" datetime="2019-10-09T14:18:33+08:00">2019-10-09</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-17 19:04:05" itemprop="dateModified" datetime="2021-01-17T19:04:05+08:00">2021-01-17</time>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在 Python 中，我们可以经常看到以双下划线 __ 包裹起来的方法，这些方法被称为魔法方法（magic method）或特殊方法（special method）。</p>
+<p>简单地说，这些方法可以给 Python 的类提供特殊功能，方便我们定制一个类。</p>
+<p>这篇文章主要是总结了在我们开发中，经常遇到的那些“魔法”方法，如何使用以及它们的使用场景。<br><a id="more"></a></p>
+<h1 id="基本定制"><a href="#基本定制" class="headerlink" title="基本定制"></a>基本定制</h1><h2 id="new"><a href="#new" class="headerlink" title="__new__"></a><code>__new__</code></h2><p>构造方法，通过调用该方法创建一个<code>cls</code>的实例。<code>__new__</code>是一个静态方法（特例，不用显示声明），它会将所属请求的类作为第一个参数。</p>
+<ul>
+<li>如果<code>__new__()</code>返回<code>cls</code>实例， 则新实例的<code>__init__</code>方法会执行</li>
+<li>如果<code>__new__()</code>没有返回<code>cls</code>实例，则<code>__init__</code>方法不会执行。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        print(<span class="string">"__init__"</span>)</span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__new__</span><span class="params">(cls, *args, **kwargs)</span>:</span></span><br><span class="line">        print(<span class="string">"__new__"</span>)</span><br><span class="line"></span><br><span class="line">p = Person(<span class="string">"dli"</span>)  <span class="comment"># __new__ </span></span><br><span class="line"><span class="comment"># output</span></span><br><span class="line"><span class="comment"># __new__</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        print(<span class="string">"__init__"</span>)</span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__new__</span><span class="params">(cls, *args, **kwargs)</span>:</span></span><br><span class="line">        print(<span class="string">"__new__"</span>)</span><br><span class="line">        <span class="keyword">return</span> super().__new__(cls)</span><br><span class="line"></span><br><span class="line">p = Person(<span class="string">"dli"</span>)  <span class="comment"># __new__ -&gt; __init__</span></span><br><span class="line"><span class="comment"># output</span></span><br><span class="line"><span class="comment"># __new__</span></span><br><span class="line"><span class="comment"># __init__</span></span><br></pre></td></tr></table></figure>
+<p><code>__new__()</code> 的目的主要是允许不可变类型的子类 (例如 int, str 或 tuple) 定制实例创建过程。它也常会在自定义<a href="https://stackoverflow.com/questions/100003/what-are-metaclasses-in-python" target="_blank" rel="noopener">元类</a>中被重载以便定制类创建过程。</p>
+<h2 id="init"><a href="#init" class="headerlink" title="__init__"></a><code>__init__</code></h2><p>初始化一个类实例。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        print(<span class="string">"__init__"</span>)</span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line">p = Person(<span class="string">"dli"</span>)  <span class="comment"># __init__</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="del"><a href="#del" class="headerlink" title="__del__"></a><code>__del__</code></h2><p><code>__del__()</code> 方法可以 (但不推荐!) 通过创建一个该实例的新引用来推迟其销毁。这被称为对象重生。</p>
+<p><code>del x</code> 并不直接调用 <code>x.__del__()</code> —- 前者会将 <code>x</code>的引用计数减一，而后者仅会在 <code>x</code> 的引用计数变为零时被调用。</p>
+<h2 id="str-repr"><a href="#str-repr" class="headerlink" title="__str__/__repr__"></a><code>__str__</code>/<code>__repr__</code></h2><ul>
+<li><code>__str__</code>强调可读性。str(), print()都调用该方法。</li>
+<li><code>__repr__</code>强调准确性。内置类型 <code>object</code> 所定义的默认实现会调用 <code>object.__repr__()</code>。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.name = <span class="string">"dli"</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"__str__"</span>)</span><br><span class="line">        <span class="keyword">return</span> self.name</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">"__repr__"</span>)</span><br><span class="line">        <span class="keyword">return</span> repr(self.name)</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">print(a)         <span class="comment"># __str__</span></span><br><span class="line">print(<span class="string">"%r"</span> % a)  <span class="comment"># __repr__</span></span><br></pre></td></tr></table></figure>
+<p>如果一个类定义了 <code>__repr__()</code> 但未定义 <code>__str__()</code>，则在需要该类实例的“非正式”字符串表示时也会使用 <code>__repr__()</code>。</p>
+<h2 id="hash"><a href="#hash" class="headerlink" title="__hash__"></a><code>__hash__</code></h2><p>内置函数<code>hash()</code>。哈希集：<code>set</code>，<code>forzenset</code>，<code>dict</code>。</p>
+<blockquote>
+<p>If a class does not define an <strong>eq</strong>() method it should not define a <strong>hash</strong>() operation either; if it defines <strong>eq</strong>() but not <strong>hash</strong>(), its instances will not be usable as items in hashable collections. If a class defines mutable objects and implements an <strong>eq</strong>() method, it should not implement <strong>hash</strong>(), since the implementation of hashable collections requires that a key’s hash value is immutable (if the object’s hash value changes, it will be in the wrong hash bucket).</p>
+</blockquote>
+<p>用户定义的类默认带有 <code>__eq__()</code> 和 <code>__hash__()</code> 方法<br>一个类如果重载了 <code>__eq__()</code> 且没有定义 <code>__hash__()</code> 则会将其 <code>__hash__()</code> 隐式地设为 <code>None</code>。当一个类的 <code>__hash__()</code> 方法为 <code>None</code> 时，该类的实例将在一个程序尝试获取其哈希值时正确地引发 <code>TypeError</code>，并会在检测 <code>isinstance(obj, collections.abc.Hashable)</code> 时被正确地识别为不可哈希对象。</p>
+<h2 id="bool"><a href="#bool" class="headerlink" title="__bool__"></a><code>__bool__</code></h2><p>内置的 <code>bool()</code> 函数，调用此方法以实现真值检测，应该返回 <code>False</code> 或 <code>True</code>。如果未定义此方法，则会查找并调用 <code>__len__()</code> 并在其返回非零值时视对象的逻辑值为真。如果一个类既未定义 <code>__len__()</code> 也未定义 <code>__bool__()</code> 则视其所有实例的逻辑值为真。</p>
+<h1 id="自定义属性访问"><a href="#自定义属性访问" class="headerlink" title="自定义属性访问"></a>自定义属性访问</h1><p>自定义以下方法来定义类实例属性的使用，赋值，删除。</p>
+<h2 id="getattr"><a href="#getattr" class="headerlink" title="__getattr__"></a><code>__getattr__</code></h2><p>当一个实例的属性可以正常的访问，<code>__getattr__</code>方法将不会调用。换句话说：假设有一个对象x, 它有一个属性<code>name</code>, <code>x.name = &quot;dli&quot;</code>, 那么在访问x.name时将不会调用<code>__getattr__</code>方法， 而是直接返回这个属性。这样做是为了提高效率。</p>
+<h2 id="getattribute"><a href="#getattribute" class="headerlink" title="__getattribute__"></a><code>__getattribute__</code></h2><p>无条件调用以实现类实例的属性访问。此调用在<code>__getattr__</code>之前。</p>
+<p>如果类还定义了<code>__getattr__</code>，则不会调用后者，除非<code>__getattribute__</code>显式调用它或引发<code>attributerror</code>。</p>
+<p>为了避免此方法中的无限递归，它的实现始终调用基本方法来访问它的任何属性。eg: <code>object.__getattribute__(self, item)</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.name = <span class="string">"dli"</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, item)</span>:</span></span><br><span class="line">        print(<span class="string">"__getattr__"</span>)</span><br><span class="line">        <span class="keyword">return</span> self[item]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattribute__</span><span class="params">(self, item)</span>:</span></span><br><span class="line">        print(<span class="string">"__getattribute__"</span>)</span><br><span class="line">        <span class="keyword">return</span> object.__getattribute__(self, item)</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">print(a.name)  </span><br><span class="line"></span><br><span class="line"><span class="comment"># output #</span></span><br><span class="line"><span class="comment"># __getattribute__</span></span><br><span class="line"><span class="comment"># dli</span></span><br></pre></td></tr></table></figure>
+<p><code>__getattribute__</code>抛出异常</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.name = <span class="string">"dli"</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, item)</span>:</span></span><br><span class="line">        print(<span class="string">"__getattr__"</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">123</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattribute__</span><span class="params">(self, item)</span>:</span></span><br><span class="line">        print(<span class="string">"__getattribute__"</span>)</span><br><span class="line">        <span class="keyword">raise</span> AttributeError</span><br><span class="line"></span><br><span class="line">a = A()</span><br><span class="line">print(a.name)</span><br><span class="line"></span><br><span class="line"><span class="comment"># output #</span></span><br><span class="line"><span class="comment"># __getattribute__</span></span><br><span class="line"><span class="comment"># __getattr__</span></span><br><span class="line"><span class="comment"># 123</span></span><br></pre></td></tr></table></figure>
+<p>我们可以改写<code>__getattribute__</code>实现查看权限， 打印log日志等</p>
+<h2 id="setattr"><a href="#setattr" class="headerlink" title="__setattr__"></a><code>__setattr__</code></h2><p>对实例对象的属性赋值时将会被调用。它应该用相同的名称调用基类方法<code>object.__setattr__(self, name, value)</code>  </p>
+<h2 id="delattr"><a href="#delattr" class="headerlink" title="__delattr__"></a><code>__delattr__</code></h2><p><code>del obj.name</code>。删除某对象的属性时，该方法将会被调用</p>
+<h1 id="实现描述器Descriptors"><a href="#实现描述器Descriptors" class="headerlink" title="实现描述器Descriptors"></a>实现描述器Descriptors</h1><p>只有当包含该方法的类的实例(instance)（所谓的描述符类）出现在所有者（ower）类中（描述符必须位于所有者类字典中，或者位于其父类之一的类字典中）时，才应用以下方法。</p>
+<ul>
+<li><code>__get__(self, instance, ower)</code></li>
+<li><code>__set__(self, instance, value)</code></li>
+<li><code>__delete__(self, instance)</code></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Age</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="string">"""描述器"""</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, age=<span class="number">18</span>)</span>:</span></span><br><span class="line">        self.age = age</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__get__</span><span class="params">(self, instance, owner)</span>:</span></span><br><span class="line">        print(type(self), type(instance), type(owner))</span><br><span class="line">        <span class="keyword">return</span> self.age</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__set__</span><span class="params">(self, instance, value)</span>:</span></span><br><span class="line">        self.age = value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__delete__</span><span class="params">(self, instance)</span>:</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span><span class="params">(object)</span>:</span></span><br><span class="line">    age = Age()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">p = Person()</span><br><span class="line">print(p.age)</span><br><span class="line">p.age = <span class="number">10</span></span><br><span class="line">print(p.age)</span><br><span class="line"></span><br><span class="line">print(Person.age)</span><br><span class="line"><span class="comment"># output</span></span><br><span class="line"><span class="comment"># &lt;class '__main__.Age'&gt; &lt;class '__main__.Person'&gt; &lt;class 'type'&gt;</span></span><br><span class="line"><span class="comment"># 18</span></span><br><span class="line"><span class="comment"># &lt;class '__main__.Age'&gt; &lt;class '__main__.Person'&gt; &lt;class 'type'&gt;</span></span><br><span class="line"><span class="comment"># 10</span></span><br><span class="line"><span class="comment"># &lt;class '__main__.Age'&gt; &lt;class 'NoneType'&gt; &lt;class 'type'&gt;</span></span><br><span class="line"><span class="comment"># 10</span></span><br></pre></td></tr></table></figure>
+<p>描述器发起调用的开始点是一个绑定 <code>p.age</code>。参数的组合方式依 <code>p</code> 而定:</p>
+<ul>
+<li>p是一个实例对象。<code>p.age</code> 将调用 <code>type(p).__dict__[&quot;age].__get__(p, type(p))</code></li>
+<li>p是一个类。<code>p.age</code>将调用 <code>type(p).__dict__[&quot;age].__get__(None, type(p))</code></li>
+</ul>
+<h1 id="容器类操作"><a href="#容器类操作" class="headerlink" title="容器类操作"></a>容器类操作</h1><p>容器通常属于序列（如列表或元组）或映射（如字典），但也存在其他形式的容器。<br><code>Containers usually are sequences (such as lists or tuples) or mappings (like dictionaries), but can represent other containers as well.</code></p>
+<h2 id="len"><a href="#len" class="headerlink" title="__len__"></a><code>__len__</code></h2><p>内置 <code>len()</code>函数实现该方法。该方法返回对象的长度（大于等于0的整数）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__len__</span><span class="params">(self)</span>:</span> </span><br><span class="line">        <span class="keyword">return</span> <span class="number">666</span></span><br><span class="line"></span><br><span class="line">demo = Demo()</span><br><span class="line">print(len(demo))   <span class="comment"># len -- 调用对象的 __len__ 方法</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 只要对象实现了__len__方法，该对象就可以使用len()方法</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="getitem"><a href="#getitem" class="headerlink" title="__getitem__"></a><code>__getitem__</code></h2><p>self[key]调用的就是调用<code>__getitem__</code>方法。对于序列类型，key应该为整数或者切片对象。</p>
+<h2 id="setitem"><a href="#setitem" class="headerlink" title="__setitem"></a><code>__setitem</code></h2><p>self[key]赋值调用的是<code>__setitem__</code>方法。</p>
+<h2 id="delitem"><a href="#delitem" class="headerlink" title="__delitem__"></a><code>__delitem__</code></h2><p>del self[key]操作调用<code>__delitem__</code>方法</p>
+<h2 id="missing"><a href="#missing" class="headerlink" title="__missing__"></a><code>__missing__</code></h2><p>当使用<code>__getitem__</code>来访问一个不存在的<code>key</code>的时候，会调用<code>__miss__</code>方法获取默认值，并将该值添加到字典中去</p>
+<p>Python中的<code>defaultdict</code>给所有的key赋一个默认的value就是通过该方法实现的。</p>
+<h2 id="iter"><a href="#iter" class="headerlink" title="__iter__"></a><code>__iter__</code></h2><p>此方法在需要为容器创建迭代器时被调用。此方法应该返回一个新的迭代器对象，它能够逐个迭代容器中的所有对象。</p>
+<p>对于映射(dict)，它应该逐个迭代容器中的键。</p>
+<p>迭代器对象也需要实现此方法；它们需要返回对象自身</p>
+<h2 id="contains"><a href="#contains" class="headerlink" title="__contains__"></a><code>__contains__</code></h2><p><code>item in obj</code> 该方法将被执行，用来判断某个元素是否存在于容器中。</p>
+<p>如果 <code>item</code> 是 <code>obj</code> 的成员则应返回真，否则返回假。对于映射类型，此检测应基于映射的键而不是值或者键值对。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dictDemo</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, defaul=None)</span>:</span></span><br><span class="line">        self._values = &#123;<span class="string">"a"</span>: <span class="number">1</span>&#125;</span><br><span class="line">        self.defaul = defaul</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, key)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">return</span> self._values[key]</span><br><span class="line">        <span class="keyword">except</span> KeyError:</span><br><span class="line">            <span class="keyword">return</span> self.__missing__(key)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__setitem__</span><span class="params">(self, key, value)</span>:</span></span><br><span class="line">        self._values[key] = value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__delitem__</span><span class="params">(self, key)</span>:</span></span><br><span class="line">        <span class="keyword">del</span> self._values[key]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__missing__</span><span class="params">(self, key)</span>:</span></span><br><span class="line">        self._values[key] = value = self.defaul</span><br><span class="line">        <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> iter(self._values)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__next__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># 如果__iter__返回self，则必须实现此方法</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__contains__</span><span class="params">(self, item)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> item <span class="keyword">in</span> self._values</span><br><span class="line"></span><br><span class="line">my_dict = dictDemo()</span><br><span class="line">print(my_dict[<span class="string">"a"</span>])  <span class="comment"># __getitem__</span></span><br><span class="line">my_dict[<span class="string">"b"</span>] = <span class="number">2</span>     <span class="comment"># __setitem__</span></span><br><span class="line">print(my_dict[<span class="string">"b"</span>])  <span class="comment">#</span></span><br><span class="line"></span><br><span class="line">print(my_dict[<span class="string">"c"</span>])  <span class="comment"># __getitem__  捕获异常，调用__missing__</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">del</span> my_dict[<span class="string">"a"</span>]     <span class="comment"># __delitem__</span></span><br><span class="line">print(my_dict[<span class="string">"a"</span>])  <span class="comment"># None 没实现__missing__就会抛出KeyError</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> my_dict:    <span class="comment"># __iter__</span></span><br><span class="line">    print(i)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(<span class="string">"c"</span> <span class="keyword">in</span> my_dict)  <span class="comment"># __contains__</span></span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Python/" rel="tag"># Python</a>
+            
+              <a href="/tags/magic-method/" rel="tag"># magic method</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/10/08/borg/" rel="next" title="borg pattern">
+                  <i class="fa fa-chevron-left"></i> borg pattern
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/10/10/template-pattern/" rel="prev" title="template pattern">
+                  template pattern <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="gitalk-container"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本定制"><span class="nav-number">1.</span> <span class="nav-text">基本定制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#new"><span class="nav-number">1.1.</span> <span class="nav-text">__new__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#init"><span class="nav-number">1.2.</span> <span class="nav-text">__init__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#del"><span class="nav-number">1.3.</span> <span class="nav-text">__del__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#str-repr"><span class="nav-number">1.4.</span> <span class="nav-text">__str__/__repr__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash"><span class="nav-number">1.5.</span> <span class="nav-text">__hash__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bool"><span class="nav-number">1.6.</span> <span class="nav-text">__bool__</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自定义属性访问"><span class="nav-number">2.</span> <span class="nav-text">自定义属性访问</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#getattr"><span class="nav-number">2.1.</span> <span class="nav-text">__getattr__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#getattribute"><span class="nav-number">2.2.</span> <span class="nav-text">__getattribute__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setattr"><span class="nav-number">2.3.</span> <span class="nav-text">__setattr__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delattr"><span class="nav-number">2.4.</span> <span class="nav-text">__delattr__</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现描述器Descriptors"><span class="nav-number">3.</span> <span class="nav-text">实现描述器Descriptors</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#容器类操作"><span class="nav-number">4.</span> <span class="nav-text">容器类操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#len"><span class="nav-number">4.1.</span> <span class="nav-text">__len__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#getitem"><span class="nav-number">4.2.</span> <span class="nav-text">__getitem__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#setitem"><span class="nav-number">4.3.</span> <span class="nav-text">__setitem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delitem"><span class="nav-number">4.4.</span> <span class="nav-text">__delitem__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#missing"><span class="nav-number">4.5.</span> <span class="nav-text">__missing__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#iter"><span class="nav-number">4.6.</span> <span class="nav-text">__iter__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#contains"><span class="nav-number">4.7.</span> <span class="nav-text">__contains__</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">dli</p>
+  <div class="site-description" itemprop="description">Python，爬虫，前端反混淆, 数据分析</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="feed-link motion-element">
+    <a href="/atom.xml" rel="alternate">
+      <i class="fa fa-rss"></i>RSS
+    </a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dli</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script src="/lib/pjax/pjax.min.js?v=0.2.8"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[pjax], script#page-configurations, #pjax script').forEach(element => {
+    var id = element.id || '';
+    var src = element.src || '';
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (id !=='') {
+      script.id = element.id;
+    }
+    if (src !== '') {
+      script.src = src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+
+  
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: 'cb2681420131b73d1006',
+      clientSecret: 'aaf315e74f779e39175b717b85ec61135645e3b4',
+      repo: 'Kevin-Cherish.github.io',
+      owner: 'Kevin-Cherish',
+      admin: ['Kevin-Cherish'],
+      id: 'f85d8175971cd350c5871c8a56626c82',
+        language: 'zh-CN',
+      
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+    </div>
+</body>
+</html>
